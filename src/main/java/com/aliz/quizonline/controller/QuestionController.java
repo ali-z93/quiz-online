@@ -1,5 +1,7 @@
 package com.aliz.quizonline.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aliz.quizonline.model.Question;
@@ -71,4 +74,17 @@ public class QuestionController {
 		return ResponseEntity.ok(subjects);
 	}
 
+	@GetMapping("fetch-questions-for-user")
+	public ResponseEntity<List<Question>> getQuestionsForUser(@RequestParam Integer numOfQuestion, @RequestParam String subjects){
+		List<Question> allQuestions = questionservice.getQuestionForUser(numOfQuestion, subjects);
+		
+		List<Question> mutableQuestions = new ArrayList<>(allQuestions);
+		Collections.shuffle(mutableQuestions);
+		
+		int availableQuestions = Math.min(numOfQuestion, mutableQuestions.size());
+		List<Question> randomQuestions = mutableQuestions.subList(0, availableQuestions);
+		return ResponseEntity.ok(randomQuestions);
+		
+	}
+	
 }
